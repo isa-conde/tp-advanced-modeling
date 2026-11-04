@@ -25,15 +25,19 @@ ni resultados impuestos por la profesora.
 
 ## 1. Validar el modelo antes de diagnosticar
 
-El código original queda conservado. Estos puntos se detectaron al leerlo y deben
-resolverse/documentarse antes de usar estados individuales para una política RFID:
+El código original queda conservado. Se creó una copia de trabajo en
+`Assignment_code_baseline_corrected.py`. El detalle y las pruebas están en
+[CORRECCIONES_BASELINE.md](CORRECCIONES_BASELINE.md).
 
-- `RTI_Agent.__init__` recibe `washed`, `location`, `is_filled` y `product`, pero
-  asigna valores fijos (`True`, `POOL`, `False` y `None`). Las listas de stock y
-  los atributos individuales pueden describir estados iniciales diferentes.
-- `RDC_Agent.step()` incrementa `detention_time` en el RDC, pero
-  `CLSC_Model.step()` no lo llama. Revisar también cuándo se reinicia la edad al
-  cambiar de nodo. Una política basada en edad requiere un reloj consistente.
+Corregido en esa copia, pendiente de revisión por el grupo:
+
+- El constructor de las RTIs ahora conserva `washed`, `location`, `is_filled`
+  y `product` tal como se reciben.
+- Se activa la actualización diaria del RDC y se unifica el reloj en todos los
+  nodos: edad cero al llegar y, después, días transcurridos desde esa llegada.
+
+Pendientes antes de experimentar:
+
 - Los PROs comienzan con stock solo de sus crate types compatibles. La slide de
   descripción dice "for each crate type": confirmar si se refiere a compatibles.
 - Las decisiones aleatorias usan el módulo global `random`; el modelo no recibe

@@ -30,20 +30,30 @@ sube a GitHub. Si se usa un editor, elegir `.venv/bin/python` como intérprete
 Desde la raíz del repositorio, con el entorno activado:
 
 ```bash
-python Assignment_code_baseline.py
+python Assignment_code_baseline_corrected.py
 ```
 
 El script ejecuta **365 steps**, con **1 step = 1 día**, y genera un Excel en
-`run_YYYY.MM.DD_HH.MM/`, con las hojas `Stock`, `Flows`, `Backorders` y `Orders`.
+`run_corrected_YYYY.MM.DD_HH.MM/`, con las hojas `Stock`, `Flows`, `Backorders` y `Orders`.
 Los resultados se excluyen de Git. El nombre de carpeta tiene precisión de un
 minuto: esperar al minuto siguiente o cambiar el destino antes de repetir una
 ejecución para evitar sobrescribir resultados.
 
 El archivo `Assignment_code_baseline.py` se incorporó sin modificar el original
 de Drive. Conservar este punto de partida para poder comparar cambios de lógica.
-La ejecución original todavía no configura una seed; sus resultados varían entre
-runs. Antes de realizar experimentos hay que preparar la reproducibilidad y
-validar los puntos indicados en [ROADMAP.md](ROADMAP.md).
+La copia `Assignment_code_baseline_corrected.py` corrige los estados iniciales y
+el reloj de permanencia. La explicación está en
+[CORRECCIONES_BASELINE.md](CORRECCIONES_BASELINE.md). Para ejecutar la referencia
+original: `python Assignment_code_baseline.py`; sus resultados siguen en `run_.../`.
+Ninguna de las dos versiones configura todavía una seed en su ejecución directa;
+sus resultados varían entre runs. Antes de realizar experimentos hay que preparar
+la reproducibilidad y revisar los pendientes de [ROADMAP.md](ROADMAP.md).
+
+Para comprobar las correcciones:
+
+```bash
+python -m unittest discover -s tests -v
+```
 
 ### Verificación del entorno (4 de noviembre de 2026)
 
@@ -53,8 +63,8 @@ validar los puntos indicados en [ROADMAP.md](ROADMAP.md).
   366 observaciones temporales (estado inicial y días 1-365), sin cantidades negativas.
 - El stock total conserva las 322.800 RTIs, por crate type, al cierre de cada día.
 
-Esto comprueba ejecución, exportación y balance de inventario; la validación de
-los estados individuales y las reglas del modelo continúa pendiente.
+Esta ejecución corresponde al original. La validación de la copia corregida se
+describe en [CORRECCIONES_BASELINE.md](CORRECCIONES_BASELINE.md).
 
 ## Material de referencia
 
