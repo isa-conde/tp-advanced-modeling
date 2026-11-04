@@ -1,0 +1,16 @@
+# Environment used to run the original baseline (Python 3.12).
+# Includes transitive dependencies to keep the group environment reproducible.
+beniget==0.5.0
+et_xmlfile==2.0.0
+gast==0.7.0
+Mesa==3.5.2
+numpy==2.5.4
+openpyxl==3.1.5
+pandas==3.1.1
+ply==3.11
+python-dateutil==4.0.0
+pythran==0.19.0
+scipy==1.18.1
+setuptools==84.2.1
+tqdm==4.70.1
+tzdata==2026.6
