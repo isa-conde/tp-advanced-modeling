@@ -86,3 +86,4 @@ fuera del repositorio.
 
 El plan propuesto, las métricas y los puntos pendientes de validación están en
 [ROADMAP.md](ROADMAP.md).
+Las definiciones actuales de los seis KPIs, en inglés, están en [KPIS.md](KPIS.md).
