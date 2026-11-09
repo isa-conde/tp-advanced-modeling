@@ -30,14 +30,14 @@ sube a GitHub. Si se usa un editor, elegir `.venv/bin/python` como intérprete
 Desde la raíz del repositorio, con el entorno activado:
 
 ```bash
-python Assignment_code_baseline_corrected.py
+python run_baseline.py --seed 42 --steps 365
 ```
 
 El script ejecuta **365 steps**, con **1 step = 1 día**, y genera un Excel en
-`run_corrected_YYYY.MM.DD_HH.MM/`, con las hojas `Stock`, `Flows`, `Backorders` y `Orders`.
-Los resultados se excluyen de Git. El nombre de carpeta tiene precisión de un
-minuto: esperar al minuto siguiente o cambiar el destino antes de repetir una
-ejecución para evitar sobrescribir resultados.
+una carpeta nueva dentro de `results/`, con las hojas `Stock`, `Flows`, `Backorders`
+y `Orders`. También exporta los seis KPIs en CSV/JSON y los registros de apoyo.
+Los resultados se excluyen de Git. Se puede usar `--steps 10` para una comprobación
+corta y `--output-dir results/mi_corrida` para elegir una carpeta vacía de destino.
 
 El archivo `Assignment_code_baseline.py` se incorporó sin modificar el original
 de Drive. Conservar este punto de partida para poder comparar cambios de lógica.
@@ -45,9 +45,13 @@ La copia `Assignment_code_baseline_corrected.py` corrige los estados iniciales y
 el reloj de permanencia. La explicación está en
 [CORRECCIONES_BASELINE.md](CORRECCIONES_BASELINE.md). Para ejecutar la referencia
 original: `python Assignment_code_baseline.py`; sus resultados siguen en `run_.../`.
-Ninguna de las dos versiones configura todavía una seed en su ejecución directa;
-sus resultados varían entre runs. Antes de realizar experimentos hay que preparar
-la reproducibilidad y revisar los pendientes de [ROADMAP.md](ROADMAP.md).
+Ejecutar directamente cualquiera de los archivos `Assignment_code_baseline*.py`
+sigue sin fijar una seed. El comando recomendado con `run_baseline.py` sí la fija,
+registra la configuración y controla el orden de los conjuntos de Python.
+La medición es observación del experimento y no modifica las políticas operativas.
+Los cambios y las fuentes de datos están explicados en
+[MEDICION_KPIS.md](MEDICION_KPIS.md). Para experimentos entre políticas distintas,
+revisar además los pendientes de [ROADMAP.md](ROADMAP.md).
 
 Para comprobar las correcciones:
 

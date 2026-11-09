@@ -1,7 +1,10 @@
 # Project KPIs
 
 Specification for comparing the corrected Baseline and Traceability scenarios.
-These are group-defined measures; their calculation has not yet been implemented.
+These are group-defined measures, implemented in `kpi_measurements.py` and
+collected by the corrected baseline. Run one replication with
+`python run_baseline.py --seed 42 --steps 365`. See
+[MEDICION_KPIS.md](MEDICION_KPIS.md) for data sources, code changes and outputs.
 
 ## Common definitions
 
@@ -12,6 +15,7 @@ These are group-defined measures; their calculation has not yet been implemented
   The first observed dispatch starts tracking; the next completes one cycle.
   No use history before the simulation is assumed.
 - Use identical definitions and measurement rules in both scenarios.
+- Short smoke runs report their actual observed horizon; results are not annualized.
 
 | # | KPI | Dimension | Unit | Preferred direction |
 | --- | --- | --- | --- | --- |

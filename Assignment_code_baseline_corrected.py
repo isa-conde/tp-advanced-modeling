@@ -22,6 +22,10 @@ RTI_BREAKAGE_RATE = 0.05 # %
 POOL_SCREENING_CAPACITY = 20 # UL
 POOL_PROCESSING_TIME = 1 # STEP
 
+# Measurement settings; these do not change replenishment or recovery policies.
+KPI_LOW_STOCK_THRESHOLD = 5000 # RTI
+KPI_DEMAND_WINDOW_DAYS = 7 # STEP
+
 POOLER = "POOL_1"
 PRODUCERS = [
     {"id": "PRO_1", "product": "Orange", "makes_dirty": False, "compatible_crates": ['TYPE_1', 'TYPE_3']},
@@ -59,6 +63,7 @@ from enum import Enum
 from datetime import datetime
 from typing import List, Dict, Optional
 from dataclasses import dataclass, field
+from kpi_measurements import KPIMeasurements
 
 
 # =============================================================================
@@ -266,6 +271,8 @@ class Pooler_Agent(mesa.Agent):
             del self.processing_times[ul.id]
     
     def process_rti(self, rti: RTI_Agent) -> Optional[RTI_Agent]:
+        if self.model.kpi_measurements is not None:
+            self.model.kpi_measurements.record_recovery(repaired=rti.broken)
         if rti.broken:
                 rti.broken = False
                 rti.dirty = True
@@ -391,6 +398,11 @@ class Producer_Agent(mesa.Agent):
                     rti.transported_this_step = True
                     rti.detention_time = 0
 
+                if self.model.kpi_measurements is not None:
+                    for rti in extracted_rtis:
+                        self.model.kpi_measurements.record_dispatch(
+                            rti, self.producer_id, self.model.steps
+                        )
                 self.model.rdc_agent.receive_rtis(extracted_rtis)
                 self.model.daily_log['movements']['pro_to_rdc'][self.producer_id][order.crate_type] += extracted_qty
             
@@ -637,8 +649,11 @@ class RPOS_Agent(mesa.Agent):
 # =============================================================================
 
 class CLSC_Model(mesa.Model):
-    def __init__(self, results_dir=None, run_timestamp=None):
-        super().__init__()
+    def __init__(self, results_dir=None, run_timestamp=None, *, seed=None, measure_kpis=True):
+        super().__init__(rng=seed)
+        self.run_seed = seed
+        if seed is not None:
+            random.seed(seed)
         
         self.timestamp = run_timestamp if run_timestamp else datetime.now().strftime("%Y.%m.%d_%H.%M")
         self.results_dir = results_dir if results_dir else f"run_{self.timestamp}"
@@ -678,6 +693,13 @@ class CLSC_Model(mesa.Model):
         for i in range(N_RPOS):
             rpos = RPOS_Agent(self, size_dist[i])
             self.r_pos_agents.append(rpos)
+
+        self.kpi_measurements = KPIMeasurements(
+            self.producers,
+            sum(isinstance(agent, RTI_Agent) for agent in self.agents),
+            low_stock_threshold=KPI_LOW_STOCK_THRESHOLD,
+            demand_window_days=KPI_DEMAND_WINDOW_DAYS,
+        ) if measure_kpis else None
         
         self.reset_daily_log()
         
@@ -774,6 +796,12 @@ class CLSC_Model(mesa.Model):
                 df_orders.to_excel(writer, sheet_name='Orders', index=False)
                 
         print(f"\nSimulation log exported successfully: {filename}")
+
+    def export_kpis(self):
+        from run_baseline import build_run_metadata
+        if self.kpi_measurements is None:
+            raise RuntimeError("KPI measurements are disabled for this model")
+        self.kpi_measurements.export(self.results_dir, build_run_metadata(self))
     
     def step(self):
 
@@ -806,6 +834,8 @@ class CLSC_Model(mesa.Model):
                 agent.transported_this_step = False
                 
         self.datacollector.collect(self)
+        if self.kpi_measurements is not None:
+            self.kpi_measurements.collect_day(self)
         
         
 # =============================================================================
@@ -832,3 +862,4 @@ if __name__ == "__main__":
         
     print("\n\nSimulation completed.")
     model.export_to_excel()
+    model.export_kpis()

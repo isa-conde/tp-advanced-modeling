@@ -40,9 +40,9 @@ Pendientes antes de experimentar:
 
 - Los PROs comienzan con stock solo de sus crate types compatibles. La slide de
   descripción dice "for each crate type": confirmar si se refiere a compatibles.
-- Las decisiones aleatorias usan el módulo global `random`; el modelo no recibe
-  una seed. Además, se itera un `set` de tipos compatibles, cuyo orden puede variar
-  entre procesos. Una seed de Mesa por sí sola no controla esas decisiones.
+- Las decisiones aleatorias usan el módulo global `random`. `run_baseline.py`
+  ahora fija la seed y el orden de los conjuntos para repetir una corrida. Falta
+  separar streams exógenos al comparar políticas que consuman azar de otra manera.
 
 Si se corrige el modelo, aplicar la misma corrección al baseline de comparación y
 al Traceability Scenario. Separar correcciones del modelo de las nuevas políticas,
@@ -67,15 +67,9 @@ no negativas y lead times/orden de activación diarios acordes al modelo.
 
 ## 3. Medir y diagnosticar el baseline
 
-Empezar con pocas métricas que cubran las tres dimensiones:
-
-| Dimensión | KPI propuesto | Datos necesarios |
-| --- | --- | --- |
-| Effectiveness | Backlog medio y máximo, por nodo y crate type | Hoja Backorders; cantidades en RTIs |
-| Effectiveness | Fracción de demanda atendida a tiempo | Instrumentar cantidad y fecha de fulfillment por order |
-| Efficiency | Utilización del screening y RTIs lavadas/reparadas | Nuevos contadores diarios; no confundir lavado con inspección |
-| Circularity | Ciclos completados por RTI durante el horizonte | Historial/contador por RTI, con frontera de ciclo explícita |
-| Circularity | Detention time medio y percentil 95 por nodo | Corregir/validar el reloj y registrar entradas/salidas |
+Los seis KPIs acordados están definidos en [KPIS.md](KPIS.md). Ya se implementaron
+los registros y cálculos; las fuentes de datos, cambios de código y archivos de
+salida están en [MEDICION_KPIS.md](MEDICION_KPIS.md).
 
 La suma diaria de backlog tiene unidades **RTI-days**: no es el número de pedidos
 distintos incumplidos. Tampoco dividir despachos de hoy por demanda de hoy mide
@@ -122,6 +116,5 @@ causal del modelo y recomendaciones, con las limitaciones explícitas.
 
 ## Próxima sesión propuesta
 
-Revisar juntos `CLSC_Model.step()` siguiendo una caja a través del loop, acordar
-los puntos de validación anteriores e instrumentar los primeros KPIs. Después,
-ejecutar un piloto del baseline antes de decidir qué política implementar.
+Revisar la medición implementada, analizar un piloto y después varias replications
+del baseline con los seis KPIs antes de decidir qué política implementar.
