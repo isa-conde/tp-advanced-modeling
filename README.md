@@ -86,3 +86,6 @@ fuera del repositorio.
 
 El plan propuesto, las métricas y los puntos pendientes de validación están en
 [ROADMAP.md](ROADMAP.md).
+La segunda propuesta de KPIs, en inglés y todavía abierta a revisión, está en
+[kpi.md](kpi.md). Esta branch parte del baseline corregido de `main` y no incluye
+la implementación de mediciones de `kpis_draft`.
