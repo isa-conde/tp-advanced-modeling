@@ -45,9 +45,10 @@ La copia `Assignment_code_baseline_corrected.py` corrige los estados iniciales y
 el reloj de permanencia. La explicación está en
 [CORRECCIONES_BASELINE.md](CORRECCIONES_BASELINE.md). Para ejecutar la referencia
 original: `python Assignment_code_baseline.py`; sus resultados siguen en `run_.../`.
-Ninguna de las dos versiones configura todavía una seed en su ejecución directa;
-sus resultados varían entre runs. Antes de realizar experimentos hay que preparar
-la reproducibilidad y revisar los pendientes de [ROADMAP.md](ROADMAP.md).
+Ninguna de las dos versiones configura una seed en su ejecución directa; sus
+resultados varían entre runs. Para ejecutar mediciones reproducibles del segundo
+borrador, usar `run_kpis.py` como se explica abajo. Revisar también los pendientes
+de [ROADMAP.md](ROADMAP.md).
 
 Para comprobar las correcciones:
 
@@ -87,5 +88,16 @@ fuera del repositorio.
 El plan propuesto, las métricas y los puntos pendientes de validación están en
 [ROADMAP.md](ROADMAP.md).
 La segunda propuesta de KPIs, en inglés y todavía abierta a revisión, está en
-[kpi.md](kpi.md). Esta branch parte del baseline corregido de `main` y no incluye
-la implementación de mediciones de `kpis_draft`.
+[kpi.md](kpi.md). Su instrumentación pasiva se explica en
+[MEDICIONES_KPIS.md](MEDICIONES_KPIS.md). No incorpora la implementación de `kpis_draft`.
+
+Para ejecutar una replication con los cinco KPIs:
+
+```bash
+.venv/bin/python run_kpis.py --seed 42 --days 365 --excel
+```
+
+Cada corrida genera su propia carpeta en `results/kpis_second_draft/`, con
+configuración, seed, horizonte, indicadores en `kpis.json` y registros diarios
+CSV por productor–tipo y nodo individual. El Excel es opcional. Las pruebas se
+ejecutan con el mismo comando `unittest` indicado arriba.

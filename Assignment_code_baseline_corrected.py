@@ -266,6 +266,8 @@ class Pooler_Agent(mesa.Agent):
             del self.processing_times[ul.id]
     
     def process_rti(self, rti: RTI_Agent) -> Optional[RTI_Agent]:
+        if self.model.kpi_observer is not None:
+            self.model.kpi_observer.recovery(rti)
         if rti.broken:
                 rti.broken = False
                 rti.dirty = True
@@ -385,6 +387,8 @@ class Producer_Agent(mesa.Agent):
             
             if extracted_qty > 0:
                 for rti in extracted_rtis:
+                    if self.model.kpi_observer is not None:
+                        self.model.kpi_observer.dispatch(rti)
                     rti.is_filled = True
                     rti.product = order.product
                     rti.location = LocationType.TRANSPORT
@@ -637,13 +641,14 @@ class RPOS_Agent(mesa.Agent):
 # =============================================================================
 
 class CLSC_Model(mesa.Model):
-    def __init__(self, results_dir=None, run_timestamp=None):
+    def __init__(self, results_dir=None, run_timestamp=None, measure_kpis=False):
         super().__init__()
         
         self.timestamp = run_timestamp if run_timestamp else datetime.now().strftime("%Y.%m.%d_%H.%M")
         self.results_dir = results_dir if results_dir else f"run_{self.timestamp}"
         self.log_filename = os.path.join(self.results_dir, f"sim_log_{self.timestamp}.txt")
         
+        self.kpi_observer = None
         self.all_orders = []
         
         # POOLER
@@ -713,6 +718,9 @@ class CLSC_Model(mesa.Model):
 
         self.datacollector = mesa.DataCollector(model_reporters=reporters)
         self.datacollector.collect(self)
+        if measure_kpis:
+            from kpi_measurements import KPIObserver
+            self.kpi_observer = KPIObserver(self)
 
     def reset_daily_log(self):
         self.daily_log = {
@@ -806,6 +814,8 @@ class CLSC_Model(mesa.Model):
                 agent.transported_this_step = False
                 
         self.datacollector.collect(self)
+        if self.kpi_observer is not None:
+            self.kpi_observer.collect(self)
         
         
 # =============================================================================
